@@ -6,9 +6,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.ForgeIngameGui;
-import net.minecraftforge.client.gui.IIngameOverlay;
-import net.minecraftforge.client.gui.OverlayRegistry;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -20,7 +21,10 @@ public class HitmarkerClient {
 
     public static void clientSetup(FMLClientSetupEvent e) {
         MinecraftForge.EVENT_BUS.addListener(HitmarkerClient::tick);
-        OverlayRegistry.registerOverlayAbove(ForgeIngameGui.CROSSHAIR_ELEMENT, HitMarker.MODID, overlay);
+    }
+
+    public static void rOverlay(RegisterGuiOverlaysEvent e) {
+        e.registerAbove(VanillaGuiOverlay.CROSSHAIR.id(), HitMarker.MODID,overlay);
     }
 
     private static void tick(TickEvent.ClientTickEvent e) {
@@ -31,15 +35,16 @@ public class HitmarkerClient {
 
     private static final ResourceLocation HIT_TEXTURE = new ResourceLocation(HitMarker.MODID, "textures/hit.png");
 
-    static IIngameOverlay overlay = HitmarkerClient::crosshair;
+    static IGuiOverlay overlay = HitmarkerClient::crosshair;
 
-    private static void crosshair(ForgeIngameGui gui, PoseStack poseStack, float partialTick, int width, int height) {
-        if (Minecraft.getInstance().options.hideGui && HitmarkerClient.remainingTicks > 0) {
+    private static void crosshair(ForgeGui gui, PoseStack poseStack, float partialTick, int width, int height) {
+        if (!Minecraft.getInstance().options.hideGui && remainingTicks > 0) {
+            gui.setupOverlayRenderState(true, false);
             bind(HIT_TEXTURE);
             if (kill) {
-                RenderSystem.setShaderColor(0, 1, 1, 1);
+                RenderSystem.setShaderColor(1, 0, 0, 1);
             }
-            GuiComponent.blit(poseStack, (width - 11) / 2, (height - 11) / 2, 0.0F, 0.0F, 11, 11, 11, 11);
+            GuiComponent.blit(poseStack, (width - 11) / 2, (height - 11) / 2,gui.getBlitOffset(), 0.0F, 0.0F, 11, 11, 11, 11);
             bind(Gui.GUI_ICONS_LOCATION);
         }
     }

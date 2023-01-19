@@ -1,12 +1,11 @@
 package tfar.hitmarker;
 
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -15,6 +14,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.registries.RegisterEvent;
 import tfar.hitmarker.network.PacketHandler;
 import tfar.hitmarker.network.S2CHitPacket;
 
@@ -27,10 +27,11 @@ public class HitMarker {
 
     public HitMarker() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        bus.addGenericListener(SoundEvent.class,this::sounds);
+        bus.addListener(this::sounds);
         bus.addListener(this::setup);
         if (FMLEnvironment.dist.isClient()) {
             bus.addListener(HitmarkerClient::clientSetup);
+            bus.addListener(HitmarkerClient::rOverlay);
         }
         MinecraftForge.EVENT_BUS.addListener(this::hit);
         MinecraftForge.EVENT_BUS.addListener(this::death);
@@ -54,7 +55,7 @@ public class HitMarker {
         PacketHandler.registerMessages(MODID);
     }
 
-    private void sounds(RegistryEvent.Register<SoundEvent> e) {
-        e.getRegistry().register(HIT.setRegistryName(HIT.getLocation()));
+    private void sounds(RegisterEvent e) {
+        e.register(Registry.SOUND_EVENT_REGISTRY,HIT.getLocation(),() -> HIT);
     }
 }
