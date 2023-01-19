@@ -21,12 +21,12 @@ public class HitmarkerClient {
     }
 
     private static void tick(TickEvent.ClientTickEvent e) {
-        if (remainingTicks > 0) {
+        if (e.phase == TickEvent.Phase.START && remainingTicks > 0) {
             remainingTicks--;
         }
     }
 
-    private static final ResourceLocation HIT_TEXTURE = new ResourceLocation("hitmarker", "textures/hit.png");
+    private static final ResourceLocation HIT_TEXTURE = new ResourceLocation(HitMarker.MODID, "textures/hit.png");
 
     private static void crosshair(RenderGameOverlayEvent.Post e) {
         if (e.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
@@ -46,5 +46,6 @@ public class HitmarkerClient {
     public static void receiveHit(boolean kill) {
         remainingTicks = 20;
         HitmarkerClient.kill = kill;
+        Minecraft.getInstance().player.playSound(HitMarker.HIT, .4f, 1);
     }
 }
