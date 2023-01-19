@@ -1,6 +1,7 @@
 package tfar.hitmarker;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -23,7 +24,7 @@ import tfar.hitmarker.network.S2CHitPacket;
 public class HitMarker {
 
     public static final String MODID = "hitmarker";
-    public static final SoundEvent HIT = new SoundEvent(new ResourceLocation(MODID, "hit"));
+    public static final SoundEvent HIT = SoundEvent.createVariableRangeEvent(new ResourceLocation(MODID, "hit"));
 
     public HitMarker() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -56,6 +57,6 @@ public class HitMarker {
     }
 
     private void sounds(RegisterEvent e) {
-        e.register(Registry.SOUND_EVENT_REGISTRY,HIT.getLocation(),() -> HIT);
+        e.register(Registries.SOUND_EVENT,HIT.getLocation(),() -> HIT);
     }
 }
