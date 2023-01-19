@@ -1,23 +1,20 @@
 package tfar.hitmarker;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fml.network.PacketDistributor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraftforge.network.PacketDistributor;
 import tfar.hitmarker.network.PacketHandler;
 import tfar.hitmarker.network.S2CHitPacket;
 
@@ -48,9 +45,8 @@ public class HitMarker {
     }
 
     private void sendToPlayer(boolean kill,DamageSource attacker) {
-        if (attacker.getTrueSource() instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity)attacker.getTrueSource();
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player),new S2CHitPacket(kill));
+        if (attacker.getEntity() instanceof ServerPlayer player) {
+            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),new S2CHitPacket(kill));
         }
     }
 
@@ -59,6 +55,6 @@ public class HitMarker {
     }
 
     private void sounds(RegistryEvent.Register<SoundEvent> e) {
-        e.getRegistry().register(HIT.setRegistryName(HIT.getName()));
+        e.getRegistry().register(HIT.setRegistryName(HIT.getLocation()));
     }
 }

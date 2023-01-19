@@ -1,11 +1,14 @@
 package tfar.hitmarker;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.IngameGui;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.gui.ForgeIngameGui;
+import net.minecraftforge.client.gui.IIngameOverlay;
+import net.minecraftforge.client.gui.OverlayRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -17,7 +20,7 @@ public class HitmarkerClient {
 
     public static void clientSetup(FMLClientSetupEvent e) {
         MinecraftForge.EVENT_BUS.addListener(HitmarkerClient::tick);
-        MinecraftForge.EVENT_BUS.addListener(HitmarkerClient::crosshair);
+        OverlayRegistry.registerOverlayAbove(ForgeIngameGui.CROSSHAIR_ELEMENT, HitMarker.MODID, overlay);
     }
 
     private static void tick(TickEvent.ClientTickEvent e) {
@@ -28,19 +31,21 @@ public class HitmarkerClient {
 
     private static final ResourceLocation HIT_TEXTURE = new ResourceLocation(HitMarker.MODID, "textures/hit.png");
 
-    private static void crosshair(RenderGameOverlayEvent.Post e) {
-        if (e.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
-            if (HitmarkerClient.remainingTicks > 0) {
-                int scaledWidth = Minecraft.getInstance().getMainWindow().getScaledWidth();
-                int scaledHeight = Minecraft.getInstance().getMainWindow().getScaledHeight();
-                Minecraft.getInstance().getTextureManager().bindTexture(HIT_TEXTURE);
-                if (kill) {
-                    RenderSystem.color4f(0,1,1,1);
-                }
-                AbstractGui.blit(e.getMatrixStack(), (scaledWidth - 11) / 2, (scaledHeight - 11) / 2, 0.0F, 0.0F, 11, 11, 11, 11);
-                Minecraft.getInstance().getTextureManager().bindTexture(IngameGui.GUI_ICONS_LOCATION);
+    static IIngameOverlay overlay = HitmarkerClient::crosshair;
+
+    private static void crosshair(ForgeIngameGui gui, PoseStack poseStack, float partialTick, int width, int height) {
+        if (Minecraft.getInstance().options.hideGui && HitmarkerClient.remainingTicks > 0) {
+            bind(HIT_TEXTURE);
+            if (kill) {
+                RenderSystem.setShaderColor(0, 1, 1, 1);
             }
+            GuiComponent.blit(poseStack, (width - 11) / 2, (height - 11) / 2, 0.0F, 0.0F, 11, 11, 11, 11);
+            bind(Gui.GUI_ICONS_LOCATION);
         }
+    }
+
+    static void bind(ResourceLocation tex) {
+        RenderSystem.setShaderTexture(0, tex);
     }
 
     public static void receiveHit(boolean kill) {
