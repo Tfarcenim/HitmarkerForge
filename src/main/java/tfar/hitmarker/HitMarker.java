@@ -59,6 +59,6 @@ public class HitMarker {
     }
 
     private void sounds(RegistryEvent.Register<SoundEvent> e) {
-        e.getRegistry().register(HIT.setRegistryName(HIT.getName()));
+        e.getRegistry().register(HIT.setRegistryName(new ResourceLocation(MODID, "hit")));
     }
 }

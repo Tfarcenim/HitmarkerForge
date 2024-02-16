@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public class S2CHitPacket {
 
-  private boolean kill;
+  private final boolean kill;
 
   public S2CHitPacket(boolean kill) {
     this.kill = kill;
