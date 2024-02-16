@@ -20,12 +20,11 @@ import tfar.hitmarker.network.S2CHitPacket;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(HitMarker.MODID)
-public class HitMarker {
+public class HitMarkerFo {
 
-    public static final String MODID = "hitmarker";
-    public static final SoundEvent HIT = new SoundEvent(new ResourceLocation(MODID, "hit"));
+    public static final SoundEvent HIT = new SoundEvent(new ResourceLocation(HitMarker.MODID, "hit"));
 
-    public HitMarker() {
+    public HitMarkerFo() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::sounds);
         bus.addListener(this::setup);
@@ -52,7 +51,7 @@ public class HitMarker {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        PacketHandler.registerMessages(MODID);
+        PacketHandler.registerMessages(HitMarker.MODID);
     }
 
     private void sounds(RegisterEvent e) {

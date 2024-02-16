@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 import tfar.hitmarker.HitMarker;
+import tfar.hitmarker.HitMarkerFo;
 
 public class PacketHandler {
   public static SimpleChannel INSTANCE;

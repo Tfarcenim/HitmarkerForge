@@ -56,6 +56,6 @@ public class HitmarkerClient {
     public static void receiveHit(boolean kill) {
         remainingTicks = 20;
         HitmarkerClient.kill = kill;
-        Minecraft.getInstance().player.playSound(HitMarker.HIT, .4f, 1);
+        Minecraft.getInstance().player.playSound(HitMarkerFo.HIT, .4f, 1);
     }
 }
