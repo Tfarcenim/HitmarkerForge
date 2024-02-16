@@ -17,6 +17,9 @@
     "entrypoints": {
         "main": [
             "tfar.hitmarker.HitMarkerFa"
+        ],
+        "client": [
+            "tfar.hitmarker.client.HitMarkerClientFabric"
         ]
     },
     "mixins": [

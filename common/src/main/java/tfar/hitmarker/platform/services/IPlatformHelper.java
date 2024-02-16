@@ -1,5 +1,10 @@
 package tfar.hitmarker.platform.services;
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import tfar.hitmarker.network.C2SModPacket;
+import tfar.hitmarker.network.S2CModPacket;
+
 public interface IPlatformHelper {
 
     /**
@@ -33,4 +38,8 @@ public interface IPlatformHelper {
 
         return isDevelopmentEnvironment() ? "development" : "production";
     }
+
+    void sendToClient(S2CModPacket msg, ResourceLocation channel, ServerPlayer player);
+    void sendToServer(C2SModPacket msg, ResourceLocation channel);
+
 }

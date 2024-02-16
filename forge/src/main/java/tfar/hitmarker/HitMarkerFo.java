@@ -1,9 +1,7 @@
 package tfar.hitmarker;
 
 import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -15,46 +13,40 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.RegisterEvent;
-import tfar.hitmarker.network.PacketHandler;
+import tfar.hitmarker.client.HitMarkerClient;
+import tfar.hitmarker.client.HitMarkerClientForge;
+import tfar.hitmarker.network.PacketHandlerForge;
 import tfar.hitmarker.network.S2CHitPacket;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(HitMarker.MODID)
 public class HitMarkerFo {
 
-    public static final SoundEvent HIT = new SoundEvent(new ResourceLocation(HitMarker.MODID, "hit"));
-
     public HitMarkerFo() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::sounds);
         bus.addListener(this::setup);
         if (FMLEnvironment.dist.isClient()) {
-            bus.addListener(HitmarkerClient::clientSetup);
-            bus.addListener(HitmarkerClient::rOverlay);
+            bus.addListener(HitMarkerClientForge::clientSetup);
+            bus.addListener(HitMarkerClientForge::rOverlay);
         }
         MinecraftForge.EVENT_BUS.addListener(this::hit);
         MinecraftForge.EVENT_BUS.addListener(this::death);
     }
 
     private void hit(LivingDamageEvent e) {
-        sendToPlayer(false,e.getSource());
+        HitMarker.hit(e.getEntity(),e.getSource());
     }
 
     private void death(LivingDeathEvent e) {
-        sendToPlayer(true,e.getSource());
-    }
-
-    private void sendToPlayer(boolean kill,DamageSource attacker) {
-        if (attacker.getEntity() instanceof ServerPlayer player) {
-            PacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player),new S2CHitPacket(kill));
-        }
+        HitMarker.death(e.getEntity(), e.getSource());
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        PacketHandler.registerMessages(HitMarker.MODID);
+        PacketHandlerForge.registerMessages(HitMarker.MODID);
     }
 
     private void sounds(RegisterEvent e) {
-        e.register(Registry.SOUND_EVENT_REGISTRY,HIT.getLocation(),() -> HIT);
+        e.register(Registry.SOUND_EVENT_REGISTRY, HitMarker.HIT.getLocation(),() -> HitMarker.HIT);
     }
 }
