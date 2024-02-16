@@ -35,7 +35,7 @@ public class HitmarkerClient {
                 int scaledHeight = Minecraft.getInstance().getMainWindow().getScaledHeight();
                 Minecraft.getInstance().getTextureManager().bindTexture(HIT_TEXTURE);
                 if (kill) {
-                    RenderSystem.color4f(0,1,1,1);
+                    RenderSystem.color3f(1,0,0);
                 }
                 AbstractGui.blit(e.getMatrixStack(), (scaledWidth - 11) / 2, (scaledHeight - 11) / 2, 0.0F, 0.0F, 11, 11, 11, 11);
                 Minecraft.getInstance().getTextureManager().bindTexture(IngameGui.GUI_ICONS_LOCATION);
